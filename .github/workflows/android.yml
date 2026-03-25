@@ -34,4 +34,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MaxIt-OTP-APK
-          path: platforms/android/app/build/outputs/apk/release/*.apk
+          # On utilise un "wildcard" (**) pour que GitHub cherche partout dans le dossier build
+          path: platforms/android/app/build/outputs/apk/**/*.apk
+
