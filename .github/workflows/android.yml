@@ -1,11 +1,13 @@
 name: Android Build Cloud
+
 on:
   push:
-    branches: [ main, master ] # Se lance quand tu pousses du code sur main ou master
+    branches: [ main, master ] # Se lance à chaque push
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -34,6 +36,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MaxIt-OTP-APK
-          # On utilise un "wildcard" (**) pour que GitHub cherche partout dans le dossier build
-          path: platforms/android/**/*.apk
+          # On scanne TOUT le projet pour trouver l'APK, peu importe son dossier
+          path: ./**/*.apk
+          # Si aucun fichier n'est trouvé, le build affichera une erreur claire
+          if-no-files-found: error
 
