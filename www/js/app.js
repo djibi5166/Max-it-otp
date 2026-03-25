@@ -88,3 +88,13 @@ document.getElementById('downloadHistory').addEventListener('click', ()=>{
 
 // ask notification permission early
 if(window.Notification && Notification.permission!=='granted') Notification.requestPermission().catch(()=>{});
+
+document.addEventListener('deviceready', function() {
+    // On attend 2 secondes pour que l'utilisateur voie l'animation
+    setTimeout(function() {
+        var splash = document.getElementById('splash-screen');
+        splash.style.transition = "opacity 0.5s ease";
+        splash.style.opacity = "0";
+        setTimeout(function() { splash.remove(); }, 500);
+    }, 2000);
+}, false);

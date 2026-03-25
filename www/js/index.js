@@ -27,3 +27,36 @@ function onDeviceReady() {
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
     document.getElementById('deviceready').classList.add('ready');
 }
+
+document.addEventListener('deviceready', onDeviceReady, false);
+
+function onDeviceReady() {
+    console.log('Cordova est prêt !');
+
+    // On attend 3 secondes pour simuler un chargement pro
+    setTimeout(function() {
+        hideSplashScreen();
+    }, 3000);
+}
+
+function hideSplashScreen() {
+    var splash = document.getElementById('splash-screen');
+    if (splash) {
+        splash.style.opacity = '0';
+        setTimeout(function() {
+            splash.style.display = 'none';
+        }, 500); // Temps de la transition CSS
+    }
+}
+
+function handleVerify() {
+    var code = document.getElementById('otp-input').value;
+    
+    if (code.length === 6) {
+        alert("Code " + code + " envoyé pour vérification !");
+        // Ici tu pourras ajouter ta logique de redirection ou d'API
+    } else {
+        alert("Veuillez entrer un code à 6 chiffres.");
+    }
+}
+
