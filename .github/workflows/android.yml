@@ -35,5 +35,5 @@ jobs:
         with:
           name: MaxIt-OTP-APK
           # On utilise un "wildcard" (**) pour que GitHub cherche partout dans le dossier build
-          path: platforms/android/app/build/outputs/apk/**/*.apk
+          path: platforms/android/**/*.apk
 
