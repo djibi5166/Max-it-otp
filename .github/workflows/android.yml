@@ -1,27 +1,17 @@
 name: Android Build Cloud
-
-on:
-  push:
-    branches: [ main, master ] # Se lance à chaque push
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Java 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-
-      - name: Setup NodeJS
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
 
       - name: Install Cordova
         run: npm install -g cordova
@@ -29,15 +19,13 @@ jobs:
       - name: Add Android Platform
         run: cordova platform add android
 
-      - name: Build APK (Release)
-        run: cordova build android --release --verbose
+      # ON FORCE LE BUILD EN MODE DEBUG ICI
+      - name: Build APK (Debug)
+        run: cordova build android --debug --verbose
 
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: MaxIt-OTP-APK
-          # On scanne TOUT le projet pour trouver l'APK, peu importe son dossier
-          path: ./**/*.apk
-          # Si aucun fichier n'est trouvé, le build affichera une erreur claire
-          if-no-files-found: error
-
+          name: Mon-Application-APK
+          # On cherche absolument partout dans tous les dossiers
+          path: "**/*.apk"
