@@ -53,12 +53,26 @@ function handleVerify() {
     var code = document.getElementById('otp-input').value;
     
     if (code.length === 6) {
-        alert("Code " + code + " envoyé pour vérification !");
-        // Ici tu pourras ajouter ta logique de redirection ou d'API
+        // 1. Vibration : 100ms (un petit coup sec, très pro)
+        navigator.vibrate(100);
+
+        // 2. Notification locale
+        cordova.plugins.notification.local.schedule({
+            title: 'Max-it OTP ✅',
+            text: 'Code ' + code + ' validé avec succès.',
+            foreground: true,
+            priority: 1
+        });
+
+        alert("Code validé !");
     } else {
-        alert("Veuillez entrer un code à 6 chiffres.");
+        // Vibration d'erreur : deux petits coups (vibre, pause, vibre)
+        navigator.vibrate([100, 50, 100]);
+        
+        alert("Erreur : Le code doit contenir 6 chiffres.");
     }
 }
+
 
 function sendNotification() {
     cordova.plugins.notification.local.schedule({
