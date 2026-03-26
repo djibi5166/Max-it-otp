@@ -60,3 +60,13 @@ function handleVerify() {
     }
 }
 
+function sendNotification() {
+    cordova.plugins.notification.local.schedule({
+        title: 'Max-it OTP',
+        text: 'Votre code de vérification est : 448 210',
+        foreground: true,
+        priority: 1,
+        // Tu peux même ajouter une icône spécifique ici
+        smallIcon: 'res://icon', 
+    });
+}
