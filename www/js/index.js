@@ -84,3 +84,21 @@ function sendNotification() {
         smallIcon: 'res://icon', 
     });
 }
+
+
+function checkServerStatus() {
+    // Remplace par l'URL que Render va te donner
+    const url = "https://max-it-backend.onrender.com/api/status";
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            alert("Réponse du serveur : " + data.message);
+            // Tu peux faire vibrer le téléphone ici pour confirmer !
+            navigator.vibrate(100);
+        })
+        .catch(error => {
+            console.error("Erreur de connexion :", error);
+            alert("Serveur hors ligne...");
+        });
+}
