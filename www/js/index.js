@@ -102,3 +102,14 @@ function checkServerStatus() {
             alert("Serveur hors ligne...");
         });
 }
+
+
+cordova.plugins.firebase.messaging.onMessage(function(payload) {
+    console.log("Message reçu du backend : ", payload);
+    
+    // On fait vibrer le téléphone à la réception
+    navigator.vibrate([100, 50, 100]);
+    
+    // On affiche une alerte ou une notification locale
+    alert("Alerte Backend : " + payload.gcm.body);
+});
