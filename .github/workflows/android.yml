@@ -34,9 +34,17 @@ jobs:
       - name: Add Android platform
         run: cordova platform add android
 
-      - name: Create google-services.json from secret
-        # On suppose que le secret contient le JSON brut (non encodé)
-        run: printf '%s' "${{ secrets.GOOGLE_SERVICES_JSON }}" > google-services.json
+      - name: Create google-services.json from base64 secret
+        run: |
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > google-services.json
+
+      - name: Validate google-services.json (optional)
+        run: |
+          if command -v jq &> /dev/null; then
+            jq empty google-services.json && echo "✅ JSON is valid" || echo "❌ JSON is invalid"
+          else
+            echo "jq not installed, skipping validation"
+          fi
 
       - name: Copy Firebase config to correct locations
         run: |
@@ -46,7 +54,7 @@ jobs:
 
       - name: Build APK (Debug)
         run: cordova build android --debug
-        # good
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
