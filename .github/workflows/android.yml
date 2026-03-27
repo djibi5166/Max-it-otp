@@ -21,26 +21,24 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      # MÉTHODE DE SÉCURITÉ : cat <<EOF écrit le JSON brut sans le modifier
-      - name: Create google-services.json
-        run: |
-          cat <<EOF > google-services.json
-          ${{secrets.GOOGLE_SERVICES_JSON}}
-          EOF
-
       - name: Add Android Platform
         run: cordova platform add android
 
-      # On force le placement du fichier là où Gradle l'attend spécifiquement
-      - name: Prepare Firebase Folders
+      # Cette méthode garantit qu'aucun caractère spécial ne casse le JSON
+      - name: Create google-services.json
         run: |
-          mkdir -p platforms/android/app/
+          echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > google-services.json
+          # On vérifie si le fichier commence par une apostrophe parasite et on la retire
+          sed -i "s/^'//;s/'$//" google-services.json
+
+      - name: Finalize Firebase Config
+        run: |
           mkdir -p platforms/android/app/src/debug/
           cp google-services.json platforms/android/app/
           cp google-services.json platforms/android/app/src/debug/
 
       - name: Build APK (Debug)
-        run: cordova build android --debug --verbose
+        run: cordova build android --debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
