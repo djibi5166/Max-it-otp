@@ -21,22 +21,24 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      # Décodage de la nouvelle chaîne Base64
+      - name: Add Android Platform
+        run: cordova platform add android --nosave || echo "Platform exists"
+
+      # Décodage avec suppression forcée de tout caractère invisible
       - name: Create google-services.json
         run: |
-          echo "${{secrets.GOOGLE_SERVICES_JSON}}" | base64 -d > google-services.json
-
-      - name: Add Android Platform
-        run: |
-          cordova platform add android --nosave || echo "Platform already exists"
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | tr -d '\n\r ' | base64 -d > google-services.json
 
       - name: Finalize Firebase Config
         run: |
           mkdir -p platforms/android/app/src/debug/
           cp google-services.json platforms/android/app/
           cp google-services.json platforms/android/app/src/debug/
-          # Vérification visuelle dans les logs (doit afficher '{')
-          head -c 1 google-services.json
+          
+          echo "--- DIAGNOSTIC DU FICHIER ---"
+          ls -l google-services.json
+          head -c 20 google-services.json
+          echo -e "\n--- FIN DIAGNOSTIC ---"
 
       - name: Build APK (Debug)
         run: cordova build android --debug
