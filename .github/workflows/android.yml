@@ -18,39 +18,11 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Setup Android SDK (with license acceptance)
-        uses: android-actions/setup-android@v3
-        with:
-          accept-android-sdk-licenses: true
-
-      - name: Add Android platform
-        run: cordova platform add android
-
-      - name: Create google-services.json from base64 secret
-        run: |
-          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > google-services.json
-
-      - name: Validate google-services.json (optional)
-        run: |
-          if command -v jq &> /dev/null; then
-            jq empty google-services.json && echo "✅ JSON is valid" || echo "❌ JSON is invalid"
-          else
-            echo "jq not installed, skipping validation"
-          fi
-
-      - name: Copy Firebase config to correct locations
-        run: |
-          mkdir -p platforms/android/app/src/debug
-          cp google-services.json platforms/android/app/
-          cp google-services.json platforms/android/app/src/debug/
+      - name: Add Android Platform
+        run: cordova platform add android --nosave
 
       - name: Build APK (Debug)
         run: cordova build android --debug
