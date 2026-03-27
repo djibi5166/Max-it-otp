@@ -21,13 +21,15 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Add Android Platform
-        run: cordova platform add android
-
-      # Décodage sécurisé du Base64
+      # On décode ton secret Base64 (celui que tu as généré sur l'image 51513.png)
       - name: Create google-services.json
         run: |
           echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > google-services.json
+
+      # On s'assure que rien ne bloque l'ajout de la plateforme
+      - name: Add Android Platform
+        run: |
+          cordova platform add android --nosave || true
 
       - name: Finalize Firebase Config
         run: |
