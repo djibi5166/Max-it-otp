@@ -21,26 +21,26 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      # On crée le fichier à la racine ET on définit une variable d'environnement
+      # MÉTHODE DE SÉCURITÉ : cat <<EOF écrit le JSON brut sans le modifier
       - name: Create google-services.json
-        run: echo '${{secrets.GOOGLE_SERVICES_JSON}}' > google-services.json
+        run: |
+          cat <<EOF > google-services.json
+          ${{secrets.GOOGLE_SERVICES_JSON}}
+          EOF
 
       - name: Add Android Platform
         run: cordova platform add android
 
-      # Cette étape place le fichier partout où Gradle pourrait le chercher
+      # On force le placement du fichier là où Gradle l'attend spécifiquement
       - name: Prepare Firebase Folders
         run: |
+          mkdir -p platforms/android/app/
           mkdir -p platforms/android/app/src/debug/
-          mkdir -p platforms/android/app/src/release/
           cp google-services.json platforms/android/app/
           cp google-services.json platforms/android/app/src/debug/
-          cp google-services.json platforms/android/app/src/release/
 
       - name: Build APK (Debug)
-        run: cordova build android --debug
-        env:
-          GOOGLE_SERVICES_JSON_CONTENT: ${{secrets.GOOGLE_SERVICES_JSON}}
+        run: cordova build android --debug --verbose
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
