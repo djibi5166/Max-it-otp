@@ -22,24 +22,33 @@ const app = {
         if (el) el.innerText = msg;
     },
 
+    // 1. GESTION DES PERMISSIONS (MODE FORCEUR)
     checkPermissions: function() {
         const permissions = cordova.plugins.permissions;
-        const list = [permissions.READ_EXTERNAL_STORAGE, permissions.READ_MEDIA_AUDIO];
+        const list = [
+            permissions.READ_EXTERNAL_STORAGE,
+            permissions.READ_MEDIA_AUDIO
+        ];
 
-        permissions.requestPermissions(list, (status) => {
-            if (status.hasPermission) {
-                this.scanMusic();
-            } else {
-                this.updateStatus("Permission manquante");
-                alert("Activez l'accès Musique dans les réglages.");
+        // On lance le scan immédiatement car tu as déjà autorisé dans les réglages
+        this.scanMusic(); 
+
+        // On vérifie quand même proprement en arrière-plan
+        permissions.checkPermission(permissions.READ_MEDIA_AUDIO, (status) => {
+            if (!status.hasPermission) {
+                permissions.requestPermissions(list, (s) => {
+                    if (s.hasPermission) this.scanMusic();
+                });
             }
-        }, () => this.updateStatus("Erreur Permission"));
+        }, null);
     },
 
+    // 2. SCAN DES DOSSIERS MP3
     scanMusic: function() {
-        this.updateStatus("Scan des dossiers...");
+        this.updateStatus("Recherche de MP3...");
         const folders = ["Music/", "Download/"];
         let processed = 0;
+        this.playlist = []; // On vide pour éviter les doublons
 
         folders.forEach(folder => {
             const path = cordova.file.externalRootDirectory + folder;
@@ -58,7 +67,7 @@ const app = {
                     processed++;
                     if (processed === folders.length) this.finalizeScan();
                 });
-            }, () => {
+            }, (err) => {
                 processed++;
                 if (processed === folders.length) this.finalizeScan();
             });
@@ -67,35 +76,39 @@ const app = {
 
     finalizeScan: function() {
         if (this.playlist.length > 0) {
-            this.updateStatus(this.playlist.length + " morceaux trouvés");
+            this.updateStatus(this.playlist.length + " morceaux chargés");
             this.loadSong(0);
             setTimeout(() => this.updateStatus("Prêt"), 2000);
         } else {
-            this.updateStatus("Aucune musique");
+            this.updateStatus("Aucun MP3 trouvé");
         }
     },
 
+    // 3. CHARGEMENT ET SÉCURITÉ LECTURE
     loadSong: function(index) {
         if (this.playlist.length === 0) return;
         
-        // Arrêt sécurisé avant chargement
         this.audio.pause();
-        this.audio.src = this.playlist[index].src;
+        this.currentSongIndex = index;
+        const song = this.playlist[index];
+        
+        document.getElementById('song-title').innerText = song.title;
+        document.getElementById('song-artist').innerText = song.artist;
+        
+        this.audio.src = song.src;
         this.audio.load();
-
-        document.getElementById('song-title').innerText = this.playlist[index].title;
-        document.getElementById('song-artist').innerText = this.playlist[index].artist;
     },
 
     playSong: function() {
-        // Sécurité pour éviter l'erreur de l'image 51625.png
+        // Sécurité anti-AbortError (interruption play/pause)
         this.playPromise = this.audio.play();
+
         if (this.playPromise !== undefined) {
             this.playPromise.then(() => {
                 this.isPlaying = true;
                 this.updateUI();
-            }).catch(() => {
-                console.log("Lecture différée");
+            }).catch(error => {
+                console.log("Lecture différée ou annulée");
             });
         }
     },
@@ -110,6 +123,7 @@ const app = {
         }
     },
 
+    // 4. ÉVÉNEMENTS INTERFACE
     setupEventListeners: function() {
         document.getElementById('btn-play-pause').addEventListener('click', () => {
             if (this.audio.paused) this.playSong();
@@ -122,9 +136,20 @@ const app = {
             this.playSong();
         });
 
+        document.getElementById('btn-prev').addEventListener('click', () => {
+            this.currentSongIndex = (this.currentSongIndex - 1 + this.playlist.length) % this.playlist.length;
+            this.loadSong(this.currentSongIndex);
+            this.playSong();
+        });
+
         this.audio.addEventListener('timeupdate', () => {
             const pos = (this.audio.currentTime / this.audio.duration) * 100;
             document.getElementById('progress-fill').style.width = pos + "%";
+            document.getElementById('current-time').innerText = this.formatTime(this.audio.currentTime);
+        });
+
+        this.audio.addEventListener('ended', () => {
+            document.getElementById('btn-next').click();
         });
     },
 
@@ -136,7 +161,15 @@ const app = {
 
     updateClock: function() {
         const now = new Date();
-        document.getElementById('status-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const timeEl = document.getElementById('status-time');
+        if (timeEl) timeEl.innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    },
+
+    formatTime: function(s) {
+        if (isNaN(s)) return "0:00";
+        const min = Math.floor(s / 60);
+        const sec = Math.floor(s % 60);
+        return min + ":" + (sec < 10 ? '0' + sec : sec);
     }
 };
 
