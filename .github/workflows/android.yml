@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22' # Changé de 20 à 22 pour corriger l'erreur fatal
+          node-version: '22'
 
       - name: Install Dependencies
         run: |
@@ -25,15 +25,13 @@ jobs:
       - name: Build Web Assets
         run: |
           mkdir -p www
-          # On force la synchronisation et on nettoie les vieux liens
           npx cap sync android
-
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '21' # Changé de 17 à 21 pour corriger l'erreur d'invalid source release
 
       - name: Build Android APK
         run: |
