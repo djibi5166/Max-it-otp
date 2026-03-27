@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -25,7 +26,7 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Setup Android SDK
+      - name: Setup Android SDK (with license acceptance)
         uses: android-actions/setup-android@v3
         with:
           accept-android-sdk-licenses: true
@@ -33,13 +34,15 @@ jobs:
       - name: Add Android platform
         run: cordova platform add android
 
-      - name: Create google-services.json
-        run: printf '%s' "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > google-services.json
+      - name: Create google-services.json from secret
+        # On suppose que le secret contient le JSON brut (non encodé)
+        run: printf '%s' "${{ secrets.GOOGLE_SERVICES_JSON }}" > google-services.json
 
-      - name: Copy Firebase config
+      - name: Copy Firebase config to correct locations
         run: |
-          mkdir -p platforms/android/app
+          mkdir -p platforms/android/app/src/debug
           cp google-services.json platforms/android/app/
+          cp google-services.json platforms/android/app/src/debug/
 
       - name: Build APK (Debug)
         run: cordova build android --debug
