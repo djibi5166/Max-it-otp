@@ -1,35 +1,25 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="com.htc.maxitotp" version="1.0.0" 
     xmlns="http://www.w3.org/ns/widgets" 
-    xmlns:cdv="http://cordova.apache.org/ns/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <name>Max+ Music</name>
-    <description>Lecteur de musique local avec design Neumorphisme.</description>
-    <author email="dev@cordova.apache.org" href="https://cordova.apache.org">Djibi</author>
+    <description>Lecteur Neumorphisme Local</description>
+    <author email="djibi@maxit.com" href="https://github.com/djibi5166">Djibi</author>
     
     <content src="index.html" />
     
     <access origin="*" />
-    <allow-intent href="http://*/*" />
-    <allow-intent href="https://*/*" />
-    <allow-intent href="tel:*" />
-    <allow-intent href="sms:*" />
-    <allow-intent href="mailto:*" />
-    <allow-intent href="geo:*" />
+    <preference name="AllowInlineMediaPlayback" value="true" />
+    <preference name="MediaPlaybackRequiresUserGesture" value="false" />
 
     <platform name="android">
-        <allow-intent href="market:*" />
-        
         <config-file target="AndroidManifest.xml" parent="/*">
             <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
             <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
         </config-file>
-
         <preference name="AndroidPersistentFileLocation" value="Compatibility" />
     </platform>
 
     <preference name="ScrollEnabled" value="false" />
-    <preference name="BackupWebStorage" value="none" />
-    <preference name="StatusBarStyle" value="lightcontent" />
 </widget>
