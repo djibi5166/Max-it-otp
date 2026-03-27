@@ -25,9 +25,10 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-     # - name: Setup Android SDK
-      #  run: |
-       #   yes | sdkmanager --licenses
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
 
       - name: Add Android platform
         run: cordova platform add android
