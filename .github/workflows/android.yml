@@ -24,12 +24,10 @@ jobs:
       - name: Add Android Platform
         run: cordova platform add android
 
-      # Cette méthode garantit qu'aucun caractère spécial ne casse le JSON
+      # Décodage sécurisé du Base64
       - name: Create google-services.json
         run: |
-          echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > google-services.json
-          # On vérifie si le fichier commence par une apostrophe parasite et on la retire
-          sed -i "s/^'//;s/'$//" google-services.json
+          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > google-services.json
 
       - name: Finalize Firebase Config
         run: |
