@@ -19,9 +19,9 @@ jobs:
       - name: Add Android Platform
         run: cordova platform add android
 
-      # ON FORCE LE BUILD EN MODE DEBUG ICI 
+      # ON FORCE LE BUILD EN MODE DEBUG ICI     
       - name: Create google-services.json
-        run: echo '${{ secrets.GOOGLE_SERVICES_JSON }}' > google-services.json
+        run: echo '${{secrets.GOOGLE_SERVICES_JSON}}' > google-services.json
 
       - name: Build APK (Debug)
         run: cordova build android --debug --verbose
