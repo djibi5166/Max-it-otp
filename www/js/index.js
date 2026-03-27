@@ -3,38 +3,41 @@ const app = {
     currentSongIndex: 0,
     audio: new Audio(),
     isPlaying: false,
+    playPromise: null,
 
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
     },
 
     onDeviceReady: function() {
+        this.updateStatus("Vérification des accès...");
         this.checkPermissions();
         this.setupEventListeners();
         this.updateClock();
         setInterval(() => this.updateClock(), 10000);
     },
 
-    // 1. DEMANDE DE PERMISSIONS
+    updateStatus: function(msg) {
+        const el = document.getElementById('loader-status');
+        if (el) el.innerText = msg;
+    },
+
     checkPermissions: function() {
         const permissions = cordova.plugins.permissions;
-        const list = [
-            permissions.READ_EXTERNAL_STORAGE,
-            permissions.READ_MEDIA_AUDIO
-        ];
+        const list = [permissions.READ_EXTERNAL_STORAGE, permissions.READ_MEDIA_AUDIO];
 
         permissions.requestPermissions(list, (status) => {
             if (status.hasPermission) {
                 this.scanMusic();
             } else {
-                console.log("Permission refusée, tentative manuelle...");
-                this.scanMusic(); // On tente quand même
+                this.updateStatus("Permission manquante");
+                alert("Activez l'accès Musique dans les réglages.");
             }
-        }, () => console.error("Erreur Permission"));
+        }, () => this.updateStatus("Erreur Permission"));
     },
 
-    // 2. SCAN DES DOSSIERS MUSIC ET DOWNLOAD
     scanMusic: function() {
+        this.updateStatus("Scan des dossiers...");
         const folders = ["Music/", "Download/"];
         let processed = 0;
 
@@ -47,7 +50,7 @@ const app = {
                         .filter(e => e.isFile && e.name.toLowerCase().endsWith('.mp3'))
                         .map(e => ({
                             title: e.name.replace('.mp3', ''),
-                            src: e.nativeURL, // Chemin natif pour Android
+                            src: e.nativeURL,
                             artist: folder.replace('/', '')
                         }));
                     
@@ -64,75 +67,76 @@ const app = {
 
     finalizeScan: function() {
         if (this.playlist.length > 0) {
+            this.updateStatus(this.playlist.length + " morceaux trouvés");
             this.loadSong(0);
+            setTimeout(() => this.updateStatus("Prêt"), 2000);
         } else {
-            document.getElementById('song-title').innerText = "Aucun MP3 trouvé";
+            this.updateStatus("Aucune musique");
         }
     },
 
-    // 3. CHARGEMENT ET LECTURE
     loadSong: function(index) {
-        this.currentSongIndex = index;
-        const song = this.playlist[index];
-        document.getElementById('song-title').innerText = song.title;
-        document.getElementById('song-artist').innerText = song.artist;
+        if (this.playlist.length === 0) return;
         
-        this.audio.src = song.src;
+        // Arrêt sécurisé avant chargement
+        this.audio.pause();
+        this.audio.src = this.playlist[index].src;
         this.audio.load();
 
-        if ('mediaSession' in navigator) {
-            navigator.mediaSession.metadata = new MediaMetadata({
-                title: song.title,
-                artist: song.artist
+        document.getElementById('song-title').innerText = this.playlist[index].title;
+        document.getElementById('song-artist').innerText = this.playlist[index].artist;
+    },
+
+    playSong: function() {
+        // Sécurité pour éviter l'erreur de l'image 51625.png
+        this.playPromise = this.audio.play();
+        if (this.playPromise !== undefined) {
+            this.playPromise.then(() => {
+                this.isPlaying = true;
+                this.updateUI();
+            }).catch(() => {
+                console.log("Lecture différée");
+            });
+        }
+    },
+
+    pauseSong: function() {
+        if (this.playPromise !== undefined) {
+            this.playPromise.then(() => {
+                this.audio.pause();
+                this.isPlaying = false;
+                this.updateUI();
             });
         }
     },
 
     setupEventListeners: function() {
         document.getElementById('btn-play-pause').addEventListener('click', () => {
-            if (this.audio.paused) {
-                this.audio.play().then(() => {
-                    this.isPlaying = true;
-                    this.updateUI();
-                }).catch(e => alert("Erreur lecture: " + e));
-            } else {
-                this.audio.pause();
-                this.isPlaying = false;
-                this.updateUI();
-            }
+            if (this.audio.paused) this.playSong();
+            else this.pauseSong();
         });
 
         document.getElementById('btn-next').addEventListener('click', () => {
             this.currentSongIndex = (this.currentSongIndex + 1) % this.playlist.length;
             this.loadSong(this.currentSongIndex);
-            this.audio.play();
-            this.isPlaying = true;
-            this.updateUI();
+            this.playSong();
         });
 
         this.audio.addEventListener('timeupdate', () => {
             const pos = (this.audio.currentTime / this.audio.duration) * 100;
             document.getElementById('progress-fill').style.width = pos + "%";
-            document.getElementById('current-time').innerText = this.formatTime(this.audio.currentTime);
         });
     },
 
     updateUI: function() {
-        const disk = document.getElementById('album-disk');
         document.getElementById('play-icon').style.display = this.isPlaying ? 'none' : 'block';
         document.getElementById('pause-icon').style.display = this.isPlaying ? 'block' : 'none';
-        disk.style.animation = this.isPlaying ? "rotate-disk 20s linear infinite" : "none";
+        document.getElementById('album-disk').style.animation = this.isPlaying ? "rotate-disk 20s linear infinite" : "none";
     },
 
     updateClock: function() {
         const now = new Date();
         document.getElementById('status-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    },
-
-    formatTime: function(s) {
-        const min = Math.floor(s / 60);
-        const sec = Math.floor(s % 60);
-        return min + ":" + (sec < 10 ? '0' + sec : sec);
     }
 };
 
