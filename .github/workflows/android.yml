@@ -21,14 +21,17 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
+      # On crée le fichier SECRET d'abord
+      - name: Create google-services.json from Secret
+        run: echo '${{secrets.GOOGLE_SERVICES_JSON}}' > google-services.json
+
+      # On ajoute la plateforme et on laisse Cordova créer les dossiers
       - name: Add Android Platform
         run: cordova platform add android
 
-      - name: Create google-services.json
+      # On place le fichier EXACTEMENT là où le plugin Firebase le veut
+      - name: Finalize Firebase Config
         run: |
-          # 1. Création à la racine
-          echo '${{secrets.GOOGLE_SERVICES_JSON}}' > google-services.json
-          # 2. Copie forcée dans le dossier Android (le secret de la réussite)
           mkdir -p platforms/android/app/
           cp google-services.json platforms/android/app/
           cp google-services.json platforms/android/
