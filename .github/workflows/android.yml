@@ -21,11 +21,13 @@ jobs:
         run: |
           npm install
           npm install @capacitor/core @capacitor/cli @capacitor/android
-
-      - name: Build Web Assets
+ 
+     - name: Build Web Assets
         run: |
           mkdir -p www
-          npx cap copy android
+          # On force la synchronisation et on nettoie les vieux liens
+          npx cap sync android
+
 
       - name: Setup Java
         uses: actions/setup-java@v4
