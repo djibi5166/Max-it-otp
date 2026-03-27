@@ -9,8 +9,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -18,27 +17,28 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Install Cordova
         run: npm install -g cordova
 
-      - name: Add Android Platform
-        run: cordova platform add android --nosave || echo "Platform exists"
+      - name: Setup Android SDK
+        run: |
+          yes | sdkmanager --licenses
 
-      # Décodage avec suppression forcée de tout caractère invisible
+      - name: Add Android platform
+        run: cordova platform add android
+
       - name: Create google-services.json
-        run: |
-          echo "${{ secrets.GOOGLE_SERVICES_JSON }}" | tr -d '\n\r ' | base64 -d > google-services.json
+        run: printf '%s' "${{ secrets.GOOGLE_SERVICES_JSON }}" | base64 -d > google-services.json
 
-      - name: Finalize Firebase Config
+      - name: Copy Firebase config
         run: |
-          mkdir -p platforms/android/app/src/debug/
+          mkdir -p platforms/android/app
           cp google-services.json platforms/android/app/
-          cp google-services.json platforms/android/app/src/debug/
-          
-          echo "--- DIAGNOSTIC DU FICHIER ---"
-          ls -l google-services.json
-          head -c 20 google-services.json
-          echo -e "\n--- FIN DIAGNOSTIC ---"
 
       - name: Build APK (Debug)
         run: cordova build android --debug
