@@ -15,7 +15,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22' # Changé de 20 à 22 pour corriger l'erreur fatal
 
       - name: Install Dependencies
         run: |
@@ -24,7 +24,6 @@ jobs:
 
       - name: Build Web Assets
         run: |
-          # Si tu n'as pas de framework (React/Vue), on s'assure que www existe
           mkdir -p www
           npx cap copy android
 
