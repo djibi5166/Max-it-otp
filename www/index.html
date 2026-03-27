@@ -3,47 +3,79 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
-    <title>Max-it OTP</title>
-    <link rel="stylesheet" href="css/index.css">
+    <title>Max+ Music</title>
+    <link rel="stylesheet" href="css/neumorphism.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
-    <div id="splash-screen">
-        <div class="loader-container">
-            <div class="logo-circle">Max+</div>
-            <div class="pulse"></div>
-        </div>
-        <p class="loading-text">Sécurisation en cours...</p>
-    </div>
 
     <div class="app-container">
-        <header>
-            <div class="status-bar"></div>
-            <h1>Max-it <span class="badge">OTP</span></h1>
+
+        <header class="status-bar-header">
+            <div class="status-bar-content">
+                <span class="time" id="status-time">10:45 AM</span>
+                <div class="notch"></div>
+                <div class="status-icons">
+                    <i class='bx bx-wifi'></i>
+                    <i class='bx bx-battery'></i>
+                    <span id="status-battery">88%</span>
+                </div>
+            </div>
+            <div class="nav-bar">
+                <button class="btn-back"><i class='bx bx-chevron-left'></i></button>
+                <h1>Now Playing</h1>
+                <button class="btn-menu"><i class='bx bx-menu-alt-right'></i></button>
+            </div>
         </header>
 
-        <main>
-            <div class="card">
-                <div class="lock-icon">🔒</div>
-                <h2>Vérification</h2>
-                <p>Veuillez saisir le code à 6 chiffres</p>
-                
-                <div class="input-group">
-                    <input type="number" id="otp-input" placeholder="000000" maxlength="6">
+        <main class="player-content">
+            
+            <div class="album-art-container">
+                <div class="album-art-disk" id="album-disk">
+                    <img id="album-art" src="https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=400" alt="Album Art">
+                    <div class="disk-center"></div>
                 </div>
+            </div>
 
-                <button id="btn-verify" onclick="handleVerify()">
-                    VÉRIFIER LE CODE
+            <div class="song-info">
+                <h2 id="song-title">Loading...</h2>
+                <p id="song-artist">Please wait</p>
+            </div>
+
+            <div class="progress-container">
+                <span class="current-time" id="current-time">0:00</span>
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+                    <div class="progress-knob" id="progress-knob"></div>
+                </div>
+                <span class="total-time" id="total-time">0:00</span>
+            </div>
+
+            <div class="controls-container">
+                <button class="control-btn secondary" id="btn-shuffle">
+                    <i class='bx bx-shuffle'></i>
                 </button>
                 
-                <a href="#" class="resend-link">Renvoyer le SMS</a>
-            </div>
-          <button onclick="sendNotification()">TESTER NOTIFICATION</button>
+                <div class="main-controls">
+                    <button class="control-btn primary" id="btn-prev">
+                        <i class='bx bx-skip-previous'></i>
+                    </button>
+                    <button class="control-btn play-pause-btn" id="btn-play-pause">
+                        <i class='bx bx-play' id="play-icon"></i>
+                        <i class='bx bx-pause' id="pause-icon" style="display: none;"></i>
+                    </button>
+                    <button class="control-btn primary" id="btn-next">
+                        <i class='bx bx-skip-next'></i>
+                    </button>
+                </div>
 
-
-            <div class="footer-info">
-                <p>Protégé par cryptage de bout en bout</p>
+                <button class="control-btn secondary" id="btn-repeat">
+                    <i class='bx bx-repeat'></i>
+                </button>
             </div>
+
         </main>
+
     </div>
 
     <script src="cordova.js"></script>

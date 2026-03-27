@@ -1,0 +1,293 @@
+/* --- RESET & POLICE --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif; /* Police moderne et ronde */
+}
+
+:root {
+    --bg-color: #E6EAF0; /* Fond Neumorphisme */
+    --primary-color: #5D5FEF; /* Couleur d'accent (Bleu Indigo) */
+    --text-primary: #1A1D21;
+    --text-secondary: #717A8A;
+    --shadow-dark: #A3AAB5;
+    --shadow-light: #FFFFFF;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* --- CONTAINER PRINCIPAL AVEC SAFE AREA --- */
+.app-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    /* Gère automatiquement les encoches et les barres de navigation */
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* --- BARRE DE STATUT PREMIUM DESIGN --- */
+.status-bar-header {
+    padding: 10px 20px 0 20px;
+}
+
+.status-bar-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+}
+
+/* Simule un Notch moderne (Esthétique) */
+.notch {
+    width: 90px;
+    height: 25px;
+    background-color: var(--text-primary);
+    border-radius: 0 0 15px 15px;
+    margin-top: -10px;
+}
+
+.status-icons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.nav-bar h1 {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+}
+
+.btn-back, .btn-menu {
+    background: none;
+    border: none;
+    font-size: 32px;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+/* --- ZONE DU LECTEUR --- */
+.player-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* Espacement vertical intelligent */
+    padding: 20px;
+}
+
+/* --- COUVERTURE D'ALBUM (Style Disque Tournant) --- */
+.album-art-container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.album-art-disk {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    overflow: hidden;
+    /* Style Neumorphisme pour le "Disque" */
+    background-color: var(--bg-color);
+    box-shadow: 12px 12px 24px var(--shadow-dark),
+                -12px -12px 24px var(--shadow-light);
+    border: 6px solid var(--bg-color);
+    transition: transform 0.5s ease;
+}
+
+.album-art-disk img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.disk-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45px;
+    height: 45px;
+    background-color: var(--bg-color);
+    border-radius: 50%;
+    box-shadow: inset 6px 6px 12px var(--shadow-dark),
+                inset -6px -6px 12px var(--shadow-light);
+}
+
+/* Animation de rotation du disque */
+@keyframes rotate-disk {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* --- INFOS MORCEAU --- */
+.song-info {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.song-info h2 {
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+}
+
+.song-info p {
+    font-size: 17px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* --- BARRE DE PROGRESSION MODERNISÉE --- */
+.progress-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 10px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    flex: 1;
+    height: 8px;
+    background-color: #D3D8E0; /* Fond de la barre */
+    border-radius: 4px;
+    overflow: visible; /* Pour le bouton de contrôle */
+    position: relative;
+    cursor: pointer;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 4px;
+    width: 0%; /* Sera animé en JS */
+    transition: width 0.1s linear;
+}
+
+.progress-knob {
+    position: absolute;
+    top: 50%;
+    left: 0%; /* Sera animé en JS */
+    transform: translate(-50%, -50%);
+    width: 16px;
+    height: 16px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: none; /* Caché par défaut, affiché au survol/clic */
+}
+
+/* Affichage du bouton lors du clic */
+.progress-bar:active .progress-knob {
+    display: block;
+}
+
+/* --- CONTRÔLES (Style Neumorphisme Doux) --- */
+.controls-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 10px 20px 10px;
+}
+
+.main-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-btn {
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+}
+
+/* Boutons secondaires (Shuffle/Repeat) */
+.control-btn.secondary {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--bg-color);
+    box-shadow: 6px 6px 12px var(--shadow-dark),
+                -6px -6px 12px var(--shadow-light);
+    font-size: 22px;
+    opacity: 0.6;
+}
+
+/* Boutons principaux (Prev/Next) */
+.control-btn.primary {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: var(--bg-color);
+    box-shadow: 8px 8px 16px var(--shadow-dark),
+                -8px -8px 16px var(--shadow-light);
+    font-size: 28px;
+}
+
+/* Bouton Play/Pause (Style Glassmorphism Flottant) */
+.control-btn.play-pause-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    box-shadow: 0 12px 24px rgba(93, 95, 239, 0.4);
+    transform: translateY(-5px); /* Flotte légèrement */
+    font-size: 36px;
+    color: #FFFFFF; /* Icône Blanche */
+}
+
+/* Effets "Pressé" pour les boutons */
+.control-btn:active {
+    box-shadow: inset 6px 6px 12px var(--shadow-dark),
+                inset -6px -6px 12px var(--shadow-light);
+}
+
+.control-btn.play-pause-btn:active {
+    box-shadow: 0 6px 12px rgba(93, 95, 239, 0.4);
+    transform: translateY(0px); /* S'enfonce */
+}
+
+/* États actifs pour Shuffle/Repeat */
+.control-btn.secondary.active {
+    color: var(--primary-color);
+    opacity: 1;
+    box-shadow: inset 5px 5px 10px var(--shadow-dark),
+                inset -5px -5px 10px var(--shadow-light);
+}
