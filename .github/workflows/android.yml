@@ -21,23 +21,26 @@ jobs:
       - name: Install Cordova
         run: npm install -g cordova
 
-      # On crée le fichier SECRET d'abord
-      - name: Create google-services.json from Secret
+      # On crée le fichier à la racine ET on définit une variable d'environnement
+      - name: Create google-services.json
         run: echo '${{secrets.GOOGLE_SERVICES_JSON}}' > google-services.json
 
-      # On ajoute la plateforme et on laisse Cordova créer les dossiers
       - name: Add Android Platform
         run: cordova platform add android
 
-      # On place le fichier EXACTEMENT là où le plugin Firebase le veut
-      - name: Finalize Firebase Config
+      # Cette étape place le fichier partout où Gradle pourrait le chercher
+      - name: Prepare Firebase Folders
         run: |
-          mkdir -p platforms/android/app/
+          mkdir -p platforms/android/app/src/debug/
+          mkdir -p platforms/android/app/src/release/
           cp google-services.json platforms/android/app/
-          cp google-services.json platforms/android/
+          cp google-services.json platforms/android/app/src/debug/
+          cp google-services.json platforms/android/app/src/release/
 
       - name: Build APK (Debug)
-        run: cordova build android --debug --verbose
+        run: cordova build android --debug
+        env:
+          GOOGLE_SERVICES_JSON_CONTENT: ${{secrets.GOOGLE_SERVICES_JSON}}
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
