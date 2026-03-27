@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">max-it-otp</string>
+    <string name="title_activity_main">max-it-otp</string>
+    <string name="package_name">com.htc.maxitotp</string>
+    <string name="custom_url_scheme">com.htc.maxitotp</string>
+</resources>

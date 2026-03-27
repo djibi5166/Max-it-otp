@@ -1,88 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Max+ Music</title>
-    <link rel="stylesheet" href="css/neumorphism.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <span id="status-time">00:00</span>
+            <div id="loader-status">Prêt</div>
+        </div>
 
-    <div class="app-container">
-
-        <header class="status-bar-header">
-            <div class="status-bar-content">
-                <span class="time" id="status-time">10:45 AM</span>
-                <div class="notch"></div>
-                <div class="status-icons">
-                    <i class='bx bx-wifi'></i>
-                    <i class='bx bx-battery'></i>
-                    <span id="status-battery">88%</span>
-                </div>
+        <div class="player-ui">
+            <div class="album-art" id="album-disk">
+                <img src="img/logo.png" alt="Disk">
             </div>
-            <div class="nav-bar">
-                <button class="btn-back"><i class='bx bx-chevron-left'></i></button>
-                <h1>Now Playing</h1>
-                <button class="btn-menu"><i class='bx bx-menu-alt-right'></i></button>
-            </div>
-        </header>
-
-       <div id="loader-status" style="font-size: 12px; color: #6d5dfc; margin-bottom: 5px;">
-    Initialisation...
-</div>
-
-        <main class="player-content">
             
-            <div class="album-art-container">
-                <div class="album-art-disk" id="album-disk">
-                    <img id="album-art" src="https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=400" alt="Album Art">
-                    <div class="disk-center"></div>
-                </div>
-            </div>
-
-            <div class="song-info">
-                <h2 id="song-title">Loading...</h2>
-                <p id="song-artist">Please wait</p>
-            </div>
+            <h2 id="song-title">Sélectionnez un titre</h2>
+            <p id="song-artist">Local Storage</p>
 
             <div class="progress-container">
-                <span class="current-time" id="current-time">0:00</span>
-                <div class="progress-bar" id="progress-bar">
-                    <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
-                    <div class="progress-knob" id="progress-knob"></div>
+                <div class="progress-bar">
+                    <div id="progress-fill"></div>
                 </div>
-                <span class="total-time" id="total-time">0:00</span>
+                <div class="time-stamps">
+                    <span id="current-time">0:00</span>
+                    <span id="total-time">0:00</span>
+                </div>
             </div>
 
-            <div class="controls-container">
-                <button class="control-btn secondary" id="btn-shuffle">
-                    <i class='bx bx-shuffle'></i>
+            <div class="controls">
+                <button id="btn-prev" class="btn-neo">⏮</button>
+                <button id="btn-play-pause" class="btn-neo main">
+                    <span id="play-icon">▶</span>
+                    <span id="pause-icon" style="display:none;">||</span>
                 </button>
-                
-                <div class="main-controls">
-                    <button class="control-btn primary" id="btn-prev">
-                        <i class='bx bx-skip-previous'></i>
-                    </button>
-                    <button class="control-btn play-pause-btn" id="btn-play-pause">
-                        <i class='bx bx-play' id="play-icon"></i>
-                        <i class='bx bx-pause' id="pause-icon" style="display: none;"></i>
-                    </button>
-                    <button class="control-btn primary" id="btn-next">
-                        <i class='bx bx-skip-next'></i>
-                    </button>
-                </div>
-
-                <button class="control-btn secondary" id="btn-repeat">
-                    <i class='bx bx-repeat'></i>
-                </button>
+                <button id="btn-next" class="btn-neo">⏭</button>
             </div>
-
-        </main>
-
+        </div>
     </div>
-
-    <script src="cordova.js"></script>
-    <script src="js/index.js"></script>
+    <script src="js/index.js" type="module"></script>
 </body>
 </html>

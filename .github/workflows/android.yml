@@ -1,34 +1,47 @@
-name: Android Build Cloud
+name: Build Capacitor Android
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout Source
         uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: |
+          npm install
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+
+      - name: Build Web Assets
+        run: |
+          # Si tu n'as pas de framework (React/Vue), on s'assure que www existe
+          mkdir -p www
+          npx cap copy android
 
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: 'zulu'
           java-version: '17'
 
-      - name: Install Cordova
-        run: npm install -g cordova
-
-      - name: Add Android Platform
-        run: cordova platform add android --nosave
-
-      - name: Build APK (Debug)
-        run: cordova build android --debug
+      - name: Build Android APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Max-it-OTP-APK
-          path: platforms/android/app/build/outputs/apk/debug/app-debug.apk
+          name: MaxMusic-Capacitor-Debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
